@@ -24,9 +24,10 @@ public class GatewayApiFactory extends AbstractManagementApiFactory<GatewayApi, 
         super();
     }
 
-    @Override
-    public GatewayApi build(String endpoint, String username, String password, boolean debugLogging) {
-        return buildClient(GatewayApi.class, endpoint, username, password, debugLogging);
-    }
+	@Override
+	public GatewayApi build(String endpoint, String username, String password, boolean debugLogging,
+			PostConverter postConverter) {
+		return buildClient(GatewayApi.class, endpoint, username, password, debugLogging, postConverter);
+	}
 
 }

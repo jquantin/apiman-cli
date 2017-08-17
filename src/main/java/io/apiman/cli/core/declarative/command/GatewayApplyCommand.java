@@ -228,7 +228,8 @@ public class GatewayApplyCommand extends AbstractApplyCommand {
                 config.getEndpoint(),
                 config.getUsername(),
                 config.getPassword(),
-                debugLogging);
+                debugLogging,
+                null);
     }
 
     private boolean statusCheck(GatewayApi client, DeclarativeGateway gateway) {

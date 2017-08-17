@@ -24,6 +24,7 @@ import io.apiman.cli.core.api.model.ApiPolicy;
 import io.apiman.cli.core.api.model.ApiVersion;
 import io.apiman.cli.management.factory.AbstractManagementApiFactory;
 import io.apiman.cli.management.factory.ManagementApiFactory;
+import io.apiman.cli.management.factory.PostConverter;
 import retrofit.client.Response;
 import retrofit.mime.TypedString;
 
@@ -37,8 +38,9 @@ import java.util.List;
  */
 public class Version12XManagementApiFactoryImpl extends AbstractManagementApiFactory<VersionAgnosticApi, Version12xServerApi> implements ManagementApiFactory<VersionAgnosticApi> {
     @Override
-    public VersionAgnosticApi build(String endpoint, String username, String password, boolean debugLogging) {
-        final Version12xServerApi delegate = buildClient(Version12xServerApi.class, endpoint, username, password, debugLogging);
+    public VersionAgnosticApi build(String endpoint, String username, String password, boolean debugLogging,
+			PostConverter postConverter) {
+        final Version12xServerApi delegate = buildClient(Version12xServerApi.class, endpoint, username, password, debugLogging, postConverter);
 
         return new VersionAgnosticApi() {
             @Override
@@ -63,7 +65,10 @@ public class Version12XManagementApiFactoryImpl extends AbstractManagementApiFac
 
             @Override
             public Api fetchVersion(String orgName, String apiName, String version) {
-                return delegate.fetchVersion(orgName, apiName, version);
+            	Api api = delegate.fetchVersion(orgName, apiName, version);
+            	api.setOrganizationName(orgName);
+            	api.setName(apiName);
+                return api;
             }
 
             @Override
@@ -102,4 +107,5 @@ public class Version12XManagementApiFactoryImpl extends AbstractManagementApiFac
             }
         };
     }
+
 }

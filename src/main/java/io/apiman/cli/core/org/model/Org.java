@@ -16,9 +16,17 @@
 
 package io.apiman.cli.core.org.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.apiman.cli.ManagerApi;
+import io.apiman.cli.core.api.model.Api;
+import io.apiman.cli.core.org.OrgApi;
+import io.apiman.cli.management.factory.ManagementApiFactory;
 
 /**
  * Models an organisation.
@@ -34,6 +42,9 @@ public class Org {
     @JsonProperty
     private String description;
 
+    @JsonIgnore
+    public ManagerApi managerApi;
+
     public Org() {
     }
 
@@ -44,5 +55,9 @@ public class Org {
 
     public String getName() {
         return name;
+    }
+    
+    public List<Api> listApis() throws Exception {
+    	return managerApi.api().list(getName());
     }
 }

@@ -16,9 +16,18 @@
 
 package io.apiman.cli.core.api.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.apiman.cli.ManagerApi;
+import io.apiman.cli.core.declarative.model.DeclarativeApi;
+import io.apiman.cli.core.declarative.model.DeclarativePolicy;
+import io.apiman.cli.util.MappingUtil;
 
 /**
  * Models an API.
@@ -28,7 +37,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Api {
-    @JsonProperty
+
+	@JsonProperty
     private String name;
 
     @JsonProperty
@@ -48,6 +58,9 @@ public class Api {
 
     @JsonProperty
     private String status;
+    
+    @JsonIgnore
+    public ManagerApi managerApi;
 
     public Api() {
     }
@@ -80,5 +93,31 @@ public class Api {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getOrganizationName() {
+		return organizationName;
+	}
+
+	public void setOrganizationName(String organizationName) {
+		this.organizationName = organizationName;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+    
+    public List<Api> listVersions() throws Exception {
+    	return managerApi.api().fetchVersions(organizationName, name);
+    }
+    
+
+    public List<ApiPolicy> listPolicies() throws Exception {
+    	return managerApi.api().fetchPolicies(organizationName, name, version);
     }
 }

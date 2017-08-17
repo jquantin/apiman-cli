@@ -20,6 +20,7 @@ import io.apiman.cli.core.common.model.ManagementApiVersion;
 import io.apiman.cli.exception.CommandException;
 import io.apiman.cli.management.binding.ManagementApiBindings;
 import io.apiman.cli.management.factory.ManagementApiFactory;
+import io.apiman.cli.management.factory.PostConverter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -97,7 +98,7 @@ public class ManagementApiUtil {
      */
     @SuppressWarnings("unchecked")
     public static <T> T buildServerApiClient(Class<T> clazz, String endpoint, String username,
-                                             String password, boolean debugLogging, ManagementApiVersion serverVersion) {
+                                             String password, boolean debugLogging, ManagementApiVersion serverVersion, PostConverter postConverter) {
         if (!factoriesInitialised) {
             LOGGER.trace("Initialising API factories");
             apiFactories = Guice.createInjector(new ManagementApiFactoryModule());
@@ -118,6 +119,6 @@ public class ManagementApiUtil {
                 managementApiFactory.getClass(), clazz, serverVersion);
 
         // use the factory to construct the Management API client
-        return (T) managementApiFactory.build(endpoint, username, password, debugLogging);
+        return (T) managementApiFactory.build(endpoint, username, password, debugLogging, postConverter);
     }
 }

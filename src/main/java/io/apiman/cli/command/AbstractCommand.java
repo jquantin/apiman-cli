@@ -302,7 +302,8 @@ public abstract class AbstractCommand implements Command {
                 getManagementApiUsername(),
                 getManagementApiPassword(),
                 logDebug,
-                serverVersion);
+                serverVersion,
+                null);
     }
 
     protected String getManagementApiEndpoint() {

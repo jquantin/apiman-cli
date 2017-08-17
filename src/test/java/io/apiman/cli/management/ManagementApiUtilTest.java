@@ -138,7 +138,7 @@ public class ManagementApiUtilTest {
     @Test
     public void testBuildApiClient() throws Exception {
         // test
-        final OrgApi actual = ManagementApiUtil.buildServerApiClient(OrgApi.class, URL, "username", "password", true, ManagementApiVersion.UNSPECIFIED);
+        final OrgApi actual = ManagementApiUtil.buildServerApiClient(OrgApi.class, URL, "username", "password", true, ManagementApiVersion.UNSPECIFIED, null);
 
         // assertions
         assertNotNull(actual);

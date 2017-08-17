@@ -21,6 +21,7 @@ import io.apiman.cli.core.api.VersionAgnosticApi;
 import io.apiman.cli.core.api.model.*;
 import io.apiman.cli.management.factory.AbstractManagementApiFactory;
 import io.apiman.cli.management.factory.ManagementApiFactory;
+import io.apiman.cli.management.factory.PostConverter;
 import retrofit.client.Response;
 import retrofit.mime.TypedString;
 
@@ -35,8 +36,9 @@ import static io.apiman.cli.util.MappingUtil.MODEL_MAPPER;
  */
 public class Version11XManagementApiFactoryImpl extends AbstractManagementApiFactory<VersionAgnosticApi, Version11xServerApi> implements ManagementApiFactory<VersionAgnosticApi> {
     @Override
-    public VersionAgnosticApi build(String endpoint, String username, String password, boolean debugLogging) {
-        final Version11xServerApi delegate = buildClient(Version11xServerApi.class, endpoint, username, password, debugLogging);
+    public VersionAgnosticApi build(String endpoint, String username, String password, boolean debugLogging,
+			PostConverter postConverter) {
+        final Version11xServerApi delegate = buildClient(Version11xServerApi.class, endpoint, username, password, debugLogging, postConverter);
 
         return new VersionAgnosticApi() {
             @Override
