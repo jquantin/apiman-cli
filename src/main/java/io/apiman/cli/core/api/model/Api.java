@@ -111,6 +111,10 @@ public class Api {
 		this.name = name;
 	}
 
+
+	public void clearStatus() {
+		this.status = null;
+	}
     
     public List<Api> listVersions() throws Exception {
     	return managerApi.api().fetchVersions(organizationName, name);
