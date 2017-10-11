@@ -254,6 +254,7 @@ See the [shared-properties.yml](examples/declarative/shared-properties.yml) exam
    
     apiman api create [args...]
     apiman api list [args...]
+    apiman api dlist [args...]
     apiman api publish [args...]
 
 ### Create API
@@ -277,6 +278,14 @@ See the [shared-properties.yml](examples/declarative/shared-properties.yml) exam
     --orgName (-o) VAL                  : Organisation name
     --serverVersion (-sv) [v11x | v12x] : Management API server version (default:
                                           v11x)
+### Deep Listing APIs
+    
+    apiman api dlist [args...]
+    
+    --orgName (-o) VAL                  : Organisation name
+    --serverVersion (-sv) [v11x | v12x] : Management API server version (default:
+                                          v11x)
+	Extract all APIs description in order to be compatible with apply command.
 
 ### Publish API
     

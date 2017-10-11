@@ -16,22 +16,31 @@
 
 package io.apiman.cli.core.api.command;
 
-import io.apiman.cli.core.api.ApiMixin;
-import io.apiman.cli.core.api.VersionAgnosticApi;
-import io.apiman.cli.core.api.model.Api;
-import io.apiman.cli.core.api.model.ApiPolicy;
-import io.apiman.cli.core.declarative.model.DeclarativeApi;
-import io.apiman.cli.core.declarative.model.DeclarativePolicy;
-import io.apiman.cli.exception.CommandException;
-import io.apiman.cli.util.LogUtil;
-import io.apiman.cli.util.MappingUtil;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kohsuke.args4j.CmdLineParser;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import io.apiman.cli.core.api.ApiMixin;
+import io.apiman.cli.core.api.VersionAgnosticApi;
+import io.apiman.cli.core.api.model.Api;
+import io.apiman.cli.core.api.model.ApiPolicy;
+import io.apiman.cli.core.declarative.model.BaseDeclaration;
+import io.apiman.cli.core.declarative.model.DeclarativeApi;
+import io.apiman.cli.core.declarative.model.DeclarativeApiConfig;
+import io.apiman.cli.core.declarative.model.DeclarativeGateway;
+import io.apiman.cli.core.declarative.model.DeclarativeOrg;
+import io.apiman.cli.core.declarative.model.DeclarativePolicy;
+import io.apiman.cli.core.declarative.model.DeclarativeSystem;
+import io.apiman.cli.exception.CommandException;
+import io.apiman.cli.util.LogUtil;
+import io.apiman.cli.util.MappingUtil;
 
 /**
  * Deep List of APIs : with versions and policies
@@ -50,12 +59,33 @@ public class ApiDeepListCommand extends AbstractApiCommand implements ApiMixin {
     public void performAction(CmdLineParser parser) throws CommandException {
         LOGGER.debug("Listing {}", this::getModelName);
 
+        final BaseDeclaration baseDeclaration = new BaseDeclaration();
+        LOGGER.debug("Creating a BaseDeclaration root object");   
+        try {
+        	baseDeclaration.setOrg(MappingUtil.JSON_MAPPER.readValue("{\"name\": \""+orgName+"\"}", DeclarativeOrg.class));
+		} catch (IOException e) {
+			LogUtil.OUTPUT.error("deserialisation error");
+			throw new CommandException(e);
+		}
+        
+        LOGGER.debug("Populating the BaseDeclaration with apis");
+        baseDeclaration.getOrg().setApis(new ArrayList<DeclarativeApi>());
+        
         VersionAgnosticApi apiClient = buildServerApiClient(VersionAgnosticApi.class, serverVersion);
         final List<Api> apis = apiClient.list(orgName);
-        final List<DeclarativeApi> deepApisList = new ArrayList<DeclarativeApi>();
+                
         apis.forEach(api -> {
             apiClient.fetchVersions(orgName, api.getName()).forEach(apiVersion -> {
+            	
+            	apiVersion.clearStatus();
                 final DeclarativeApi declApi = MappingUtil.map(apiVersion, DeclarativeApi.class);
+                declApi.setOrganizationName(null);
+                declApi.setConfig(MappingUtil.map(apiClient.fetchVersionConfig(orgName, api.getName(), apiVersion.getVersion()), DeclarativeApiConfig.class));
+				declApi.getConfig().setGateway("");
+				declApi.getConfig().getGateways().forEach(gw -> {
+					declApi.getConfig().setGateway(declApi.getConfig().getGateway()+" "+gw.getGatewayId());
+				});
+				
                 final List<DeclarativePolicy> ListPolicies = new ArrayList<DeclarativePolicy>();
                 apiClient.fetchPolicies(orgName, api.getName(), apiVersion.getVersion())
                     .forEach(policy -> {
@@ -63,14 +93,26 @@ public class ApiDeepListCommand extends AbstractApiCommand implements ApiMixin {
                             DeclarativePolicy declarativePolicy = MappingUtil.map(apiPolicy, DeclarativePolicy.class);
                             declarativePolicy.setName(policy.getPolicyDefinitionId());
                             declarativePolicy.setId(policy.getId().toString());
-                            declarativePolicy.setConfig(apiPolicy.getConfiguration());
+                            try {
+								declarativePolicy.setConfig(MappingUtil.JSON_MAPPER.writeValueAsString(apiPolicy.getConfiguration()));
+							} catch (JsonProcessingException e) {
+								LogUtil.OUTPUT.error("APIPolicy serialisation error");
+								throw new CommandException(e);
+							}
+                            
                             ListPolicies.add(declarativePolicy);
                         });
                 declApi.setPolicies(ListPolicies);
-                deepApisList.add(declApi);
+                baseDeclaration.getOrg().getApis().add(declApi);
             });
         });
-        LogUtil.OUTPUT.info(MappingUtil.safeWriteValueAsJson(deepApisList));
+        
+        LOGGER.debug("Populating the BaseDeclaration with empty System and gateways");
+        baseDeclaration.setSystem(new DeclarativeSystem());
+        baseDeclaration.getSystem().setGateways(new ArrayList<DeclarativeGateway>());
+        
+        LOGGER.debug("Outputting the BaseDeclaration");
+        LogUtil.OUTPUT.info(MappingUtil.safeWriteValueAsJson(baseDeclaration));
 
     }
 }
