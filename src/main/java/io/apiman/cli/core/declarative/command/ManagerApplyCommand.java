@@ -381,7 +381,8 @@ public class ManagerApplyCommand extends AbstractApplyCommand {
             final String apiState = fetchCurrentState(apiClient, orgName, apiName, apiVersion);
             if (STATE_RETIRED.equals(apiState.toUpperCase())) {
                 LOGGER.warn("API '{}' is retired - skipping configuration", apiName);
-
+            } if (STATE_PUBLISHED.equals(apiState.toUpperCase())) {
+                LOGGER.warn("API '{}' is published - skipping configuration", apiName);
             } else {
                 configureApi(declarativeApi, apiClient, orgName, apiName, apiVersion);
             }
