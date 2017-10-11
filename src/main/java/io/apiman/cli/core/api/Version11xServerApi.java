@@ -46,6 +46,9 @@ public interface Version11xServerApi {
 
     @GET("/organizations/{orgName}/services/{serviceName}/versions")
     List<Api> fetchVersions(@Path("orgName") String orgName, @Path("serviceName") String serviceName);
+    
+    @GET("/organizations/{orgName}/services/{serviceName}/versions/{version}")
+    ApiConfig fetchVersionConfig(@Path("orgName") String orgName, @Path("serviceName") String serviceName, @Path("version") String version);
 
     @PUT("/organizations/{orgName}/services/{serviceName}/versions/{version}")
     Response configure(@Path("orgName") String orgName, @Path("serviceName") String serviceName,
