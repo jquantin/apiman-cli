@@ -17,6 +17,8 @@
 package io.apiman.cli.core.org;
 
 import io.apiman.cli.core.org.model.Org;
+import io.apiman.cli.core.org.model.OrgSearchIn;
+import io.apiman.cli.core.org.model.OrgSearchOut;
 import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.GET;
@@ -32,4 +34,7 @@ public interface OrgApi {
 
     @GET("/organizations/{orgName}")
     Org fetch(@Path("orgName") String orgName);
+    
+    @POST("/search/organizations/")
+    OrgSearchOut search(@Body OrgSearchIn orgSearch);
 }
