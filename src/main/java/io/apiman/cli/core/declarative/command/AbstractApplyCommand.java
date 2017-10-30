@@ -57,6 +57,9 @@ public abstract class AbstractApplyCommand extends AbstractFinalCommand {
     @Option(name = "--propertiesFile", usage = "Properties file")
     protected List<Path> propertiesFiles;
 
+    @Option(name = "--check", usage = "Check only declarartion")
+    private boolean checking;
+    
     @Override
     protected String getCommandDescription() {
         return "Apply declaration";
@@ -107,6 +110,8 @@ public abstract class AbstractApplyCommand extends AbstractFinalCommand {
 
     protected abstract void applyDeclaration(BaseDeclaration declaration);
 
+    public abstract String checkDeclaration(BaseDeclaration declaration);
+    
     protected BaseDeclaration loadDeclaration(Path declarationFile, Map<String, String> parsedProperties) {
       // parse declaration
       if (declarationFile.endsWith(JSON_EXTENSION)) {

@@ -272,4 +272,9 @@ public class GatewayApplyCommand extends AbstractApplyCommand {
                     message));
         }
     }
+    
+    @Override
+    public String checkDeclaration(BaseDeclaration declaration) {
+        return "todo";
+    }
 }
