@@ -5,6 +5,7 @@ import java.util.List;
 import io.apiman.cli.core.api.GatewayApi;
 import io.apiman.cli.core.api.VersionAgnosticApi;
 import io.apiman.cli.core.api.model.Api;
+import io.apiman.cli.core.client.ClientApi;
 import io.apiman.cli.core.common.model.ManagementApiVersion;
 import io.apiman.cli.core.org.OrgApi;
 import io.apiman.cli.core.org.model.Org;
@@ -52,6 +53,10 @@ public class ManagerApi {
 	
 	public VersionAgnosticApi api() {
 		return ManagementApiUtil.buildServerApiClient(VersionAgnosticApi.class, endpoint, username, password, debugLogging, serverVersion, getPostConverter());
+	}
+	
+	public ClientApi client() {
+		return ManagementApiUtil.buildServerApiClient(ClientApi.class, endpoint, username, password, debugLogging, ManagementApiVersion.UNSPECIFIED, getPostConverter());
 	}
 	
 	public PostConverter getPostConverter() {
