@@ -39,4 +39,13 @@ public class ApiPlan {
         this.planId = planId;
         this.version = version;
     }
+
+    public String getPlanId() {
+        return planId;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
 }

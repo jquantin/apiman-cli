@@ -84,6 +84,10 @@ public class ApiConfig {
         this.plans = plans;
     }
 
+    public List<ApiPlan> getPlans() {
+        return plans;
+    }
+
     public void setPublicApi(boolean publicApi) {
         this.publicApi = publicApi;
     }
