@@ -328,4 +328,17 @@ public abstract class AbstractCommand implements Command {
     public boolean getLogDebug() {
         return logDebug;
     }
+    
+    public void setServerAddress(String serverAddress) {
+        this.serverAddress = serverAddress;
+    }
+
+    public void setManagementApiUsername(String serverUsername) {
+        this.serverUsername = serverUsername;
+    }
+
+    public void setManagementApiPassword(String serverPassword) {
+        this.serverPassword = serverPassword;
+    }
+    
 }
