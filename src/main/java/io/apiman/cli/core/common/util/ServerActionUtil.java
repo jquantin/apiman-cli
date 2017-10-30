@@ -64,4 +64,27 @@ public class ServerActionUtil {
             return apiClient.doAction(action);
         });
     }
+    
+    /**
+     * Register a Client.
+     *
+     * @param orgName       the organisation name
+     * @param clientName       the client name
+     * @param clientVersion    the client version
+     * @param actionClient     the Server Action API client
+     */
+    public static void registerClient(String orgName, String clientName, String clientVersion, ActionApi actionClient) {
+        String actionType = "registerClient";
+
+        ManagementApiUtil.invokeAndCheckResponse(HttpURLConnection.HTTP_NO_CONTENT, () -> {
+            final ServerAction action = new ServerAction(
+                    actionType,
+                    orgName,
+                    clientName,
+                    clientVersion
+            );
+
+            return actionClient.doAction(action);
+        });
+    }
 }
