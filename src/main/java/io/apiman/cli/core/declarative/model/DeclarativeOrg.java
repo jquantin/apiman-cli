@@ -19,6 +19,7 @@ package io.apiman.cli.core.declarative.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.apiman.cli.core.client.model.Client;
 import io.apiman.cli.core.org.model.Org;
 
 import java.util.List;
@@ -38,6 +39,10 @@ public class DeclarativeOrg extends Org {
     @JsonProperty
     private List<DeclarativePlan> plans;
 
+    @JsonProperty
+    private List<Client> clients;
+
+    
     public List<DeclarativeApi> getApis() {
         return apis;
     }
@@ -52,5 +57,13 @@ public class DeclarativeOrg extends Org {
 
     public void setPlans(List<DeclarativePlan> plans) {
         this.plans = plans;
+    }
+
+    public List<Client> getClients() {
+        return clients;
+    }
+
+    public void setClients(List<Client> clients) {
+        this.clients = clients;
     }
 }
