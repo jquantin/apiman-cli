@@ -34,4 +34,9 @@ public abstract class AbstractApiCommand extends AbstractModelCommand<Api, Versi
 
     @Option(name = "--serverVersion", aliases = {"-sv"}, usage = "Management API server version")
     protected ManagementApiVersion serverVersion = ManagementApiVersion.DEFAULT_VERSION;
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
 }
