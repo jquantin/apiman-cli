@@ -35,7 +35,10 @@ import io.apiman.cli.core.declarative.model.BaseDeclaration;
 import io.apiman.cli.core.declarative.model.DeclarativeApi;
 import io.apiman.cli.core.declarative.model.DeclarativeApiConfig;
 import io.apiman.cli.core.declarative.model.DeclarativeOrg;
+import io.apiman.cli.core.declarative.model.DeclarativePlan;
 import io.apiman.cli.core.declarative.model.DeclarativePolicy;
+import io.apiman.cli.core.plan.PlanApi;
+import io.apiman.cli.core.plan.model.Plan;
 import io.apiman.cli.exception.CommandException;
 import io.apiman.cli.util.LogUtil;
 import io.apiman.cli.util.MappingUtil;
@@ -93,7 +96,7 @@ public class ApiDeepListCommand extends AbstractApiCommand implements ApiMixin {
                     declApi.getConfig().setGateway(declApi.getConfig().getGateway() + " " + gw.getGatewayId());
                 });
 
-                final List<DeclarativePolicy> ListPolicies = new ArrayList<DeclarativePolicy>();
+                final List<DeclarativePolicy> listPolicies = new ArrayList<DeclarativePolicy>();
                 apiClient.fetchPolicies(orgName, api.getName(), apiVersion.getVersion()).forEach(policy -> {
                     ApiPolicy apiPolicy = apiClient.fetchPolicy(orgName, api.getName(), apiVersion.getVersion(),
                             policy.getId());
@@ -108,13 +111,48 @@ public class ApiDeepListCommand extends AbstractApiCommand implements ApiMixin {
                         throw new CommandException(e);
                     }
 
-                    ListPolicies.add(declarativePolicy);
+                    listPolicies.add(declarativePolicy);
                 });
-                declApi.setPolicies(ListPolicies);
+                declApi.setPolicies(listPolicies);
                 baseDeclaration.getOrg().getApis().add(declApi);
             });
         });
+        LOGGER.debug("Populating the BaseDeclaration with plans");
+        baseDeclaration.getOrg().setPlans(new ArrayList<DeclarativePlan>());
+        PlanApi planClient = buildServerApiClient(PlanApi.class);
+        final List<Plan> plans = planClient.list(orgName);
 
+        plans.forEach(plan -> {
+            planClient.fetchVersions(orgName, plan.getName()).forEach(planVersion -> {
+                
+                final DeclarativePlan declPlan = MappingUtil.map(planVersion, DeclarativePlan.class);
+
+                final List<DeclarativePolicy> listPolicies = new ArrayList<DeclarativePolicy>();
+                planClient.fetchPolicies(orgName, plan.getName(), planVersion.getVersion()).forEach(policy -> {
+                    ApiPolicy apiPolicy = planClient.fetchPolicy(orgName, plan.getName(), planVersion.getVersion(),
+                            policy.getId());
+                    DeclarativePolicy declarativePolicy = MappingUtil.map(apiPolicy, DeclarativePolicy.class);
+                    declarativePolicy.setName(policy.getPolicyDefinitionId());
+                    declarativePolicy.setId(policy.getId().toString());
+                    try {
+                        declarativePolicy
+                                .setConfig(MappingUtil.JSON_MAPPER.writeValueAsString(apiPolicy.getConfiguration()));
+                    } catch (JsonProcessingException e) {
+                        LogUtil.OUTPUT.error("APIPolicy serialisation error");
+                        throw new CommandException(e);
+                    }
+
+                    listPolicies.add(declarativePolicy);
+                });
+                declPlan.setPolicies(listPolicies);
+                baseDeclaration.getOrg().getPlans().add(declPlan);
+            });
+        });
+        
+        
+        
+        
+        
         return baseDeclaration;
     }
 }

@@ -189,6 +189,33 @@ public class ManagerApplyCommand extends AbstractApplyCommand {
                                                             .concat("Plan '" + declarativePlan.getName() + "' version '"
                                                                     + declarativePlan.getVersion()
                                                                     + "' already exists");
+                                                    // check policies of plan
+                                                    ofNullable(declarativePlan.getPolicies()).ifPresent(declarativePolicies -> {
+
+                                                        // existing policies for the Plan
+                                                        final List<ApiPolicy> apiPolicies = planClient.fetchPolicies(orgName, declarativePlan.getName(),
+                                                                declarativePlan.getVersion());
+
+                                                        if (apiPolicies.size() > 0)
+                                                            check[0] = check[0].concat("\n")
+                                                                    .concat("Checking policies of Plan '" + declarativePlan.getName() + "' :");
+
+                                                        declarativePolicies.forEach(declarativePolicy -> {
+                                                            final String policyName = declarativePolicy.getName();
+                                                            // determine if the policy already exists for this Plan
+                                                            final Optional<ApiPolicy> existingPolicy = apiPolicies.stream()
+                                                                    .filter(p -> policyName.equals(p.getPolicyDefinitionId())).findFirst();
+
+                                                            if (existingPolicy.isPresent()) {
+                                                                check[0] = check[0].concat("\n")
+                                                                        .concat("Existing policy '" + policyName + "' configuration for Plan: '"
+                                                                                + declarativePlan.getName() + "' will be uptated");
+                                                            } else {
+                                                                check[0] = check[0].concat("\n").concat("Policy '" + policyName + "' to Plan: '"
+                                                                        + declarativePlan.getName() + "' will be added");
+                                                            }
+                                                        });
+                                                    });
                                                 }).ifNotPresent(() -> {
                                                     check[0] = check[0].concat("\n").concat(
                                                             "Plan '\"+declarativePlan.getName()+\"' version '\"+declarativePlan.getVersion()+\"' will be created");
@@ -197,38 +224,6 @@ public class ManagerApplyCommand extends AbstractApplyCommand {
                                 check[0] = check[0].concat("\n")
                                         .concat("Plan: " + declarativePlan.getName() + " will be created");
                             });
-
-                    // check policies of plan
-                    applyPolicies(planClient, declarativePlan, orgName, declarativePlan.getName(),
-                            declarativePlan.getVersion());
-                    ofNullable(declarativePlan.getPolicies()).ifPresent(declarativePolicies -> {
-
-                        // existing policies for the Plan
-                        final List<ApiPolicy> apiPolicies = planClient.fetchPolicies(orgName, declarativePlan.getName(),
-                                declarativePlan.getVersion());
-
-                        if (apiPolicies.size() > 0)
-                            check[0] = check[0].concat("\n")
-                                    .concat("Checking policies of Plan '" + declarativePlan.getName() + "' :");
-
-                        declarativePolicies.forEach(declarativePolicy -> {
-                            final String policyName = declarativePolicy.getName();
-                            final ApiPolicy apiPolicy = new ApiPolicy(
-                                    MappingUtil.safeWriteValueAsJson(declarativePolicy.getConfig()));
-                            // determine if the policy already exists for this Plan
-                            final Optional<ApiPolicy> existingPolicy = apiPolicies.stream()
-                                    .filter(p -> policyName.equals(p.getPolicyDefinitionId())).findFirst();
-
-                            if (existingPolicy.isPresent()) {
-                                check[0] = check[0].concat("\n")
-                                        .concat("Existing policy '" + policyName + "' configuration for Plan: '"
-                                                + declarativePlan.getName() + "' will be uptated");
-                            } else {
-                                check[0] = check[0].concat("\n").concat("Policy '" + policyName + "' to Plan: '"
-                                        + declarativePlan.getName() + "' will be added");
-                            }
-                        });
-                    });
                 });
 
             });
