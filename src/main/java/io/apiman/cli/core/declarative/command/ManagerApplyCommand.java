@@ -66,6 +66,8 @@ import io.apiman.manager.api.beans.clients.NewClientVersionBean;
 import retrofit.mime.TypedString;
 
 public class ManagerApplyCommand extends AbstractApplyCommand {
+    private static final String STATE_CREATED = "CREATED";
+    private static final String STATE_LOCKED = "LOCKED";
     private static final String STATE_READY = "READY";
     private static final String STATE_PUBLISHED = "PUBLISHED";
     private static final String STATE_RETIRED = "RETIRED";
@@ -407,6 +409,7 @@ public class ManagerApplyCommand extends AbstractApplyCommand {
      * @param declaration the Declaration to apply.
      */
     private void applyPlugins(BaseDeclaration declaration) {
+        ofNullable(declaration.getSystem()).ifPresent(system -> {
         ofNullable(declaration.getSystem().getPlugins()).ifPresent(plugins -> {
             LOGGER.debug("Applying plugins");
 
@@ -420,6 +423,7 @@ public class ManagerApplyCommand extends AbstractApplyCommand {
                     apiClient.create(plugin);
                 }
             });
+        });
         });
     }
 
@@ -499,9 +503,10 @@ public class ManagerApplyCommand extends AbstractApplyCommand {
                         .ifNotPresent(() -> {
                             LOGGER.info("Adding plan: {}",  declarativePlan.getName());
 
-                            final Plan plan = MappingUtil.map(declarativePlan, Plan.class);
+                            final Plan plan = new Plan();
                             plan.setInitialVersion(plan.getVersion());
-                            plan.setVersion(null);
+                            plan.setName(declarativePlan.getName());
+                            plan.setDescription(declarativePlan.getDescription());
                             planClient.create(orgName, plan);
                         });
 
@@ -753,6 +758,10 @@ public class ManagerApplyCommand extends AbstractApplyCommand {
         ofNullable(declarativeApi.getConfig().getSecurity())
                 .ifPresent(securityConfig -> apiConfig.setEndpointProperties(
                         MappingUtil.map(securityConfig, EndpointProperties.class)));
+        // lock used plan
+        declarativeApi.getConfig().getPlans().forEach(usedPlan -> {
+            lock(buildServerApiClient(PlanApi.class), orgName, usedPlan.getPlanId(), usedPlan.getVersion());
+        });
 
         apiClient.configure(orgName, apiName, apiVersion, apiConfig);
     }
@@ -871,7 +880,7 @@ public class ManagerApplyCommand extends AbstractApplyCommand {
 
                     case v12x:
                         LOGGER.info("Republishing API: {}", apiName);
-                        performPublish(orgName, apiName, apiVersion);
+                        ServerActionUtil.publishApi(orgName, apiName, apiVersion, serverVersion, buildServerApiClient(ActionApi.class));
                         break;
                 }
                 break;
@@ -879,6 +888,34 @@ public class ManagerApplyCommand extends AbstractApplyCommand {
             default:
                 throw new DeclarativeException(String.format(
                         "Unable to publish API '%s' in state: %s", apiName, apiState));
+        }
+    }
+    
+    /**
+     * Lock the plan.
+     *
+     * @param planClient
+     * @param orgName
+     * @param planName
+     * @param planVersion
+     */
+    private void lock(PlanApi planClient, String orgName, String planName, String planVersion) {
+        LOGGER.debug("Attempting to lock Plan: {}", planName);
+        final String apiState = ofNullable(planClient.fetchVersion(orgName, planName, planVersion).getStatus()).orElse("");
+
+        switch (apiState.toUpperCase()) {//Created | Ready | Locked
+            case STATE_CREATED : case STATE_READY:
+                LOGGER.info("Locking Plan : {}", planName);
+                ServerActionUtil.lockPlan(orgName, planName, planVersion, buildServerApiClient(ActionApi.class));
+                break;
+            
+            case STATE_LOCKED:
+                LOGGER.info("Plan already locked: {}", planName);
+                break;
+
+            default:
+                throw new DeclarativeException(String.format(
+                        "Unable to lock Plan '%s' in state: %s", planName, apiState));
         }
     }
 
