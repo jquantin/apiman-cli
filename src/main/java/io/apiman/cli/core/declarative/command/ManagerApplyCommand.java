@@ -497,8 +497,6 @@ public class ManagerApplyCommand extends AbstractApplyCommand {
                 of(DeclarativeUtil.checkExists(() -> planClient.fetch(orgName, declarativePlan.getName())))
                         .ifPresent(existing -> {
                             LOGGER.info("Plan already exists: {}",  declarativePlan.getName());
-                            // create and configure Plan version
-                            applyPlanVersion(planClient, declarativePlan, orgName, declarativePlan.getName(), declarativePlan.getVersion());
                         })
                         .ifNotPresent(() -> {
                             LOGGER.info("Adding plan: {}",  declarativePlan.getName());
@@ -510,6 +508,8 @@ public class ManagerApplyCommand extends AbstractApplyCommand {
                             planClient.create(orgName, plan);
                         });
 
+                // create and configure Plan version
+                applyPlanVersion(planClient, declarativePlan, orgName, declarativePlan.getName(), declarativePlan.getVersion());
                 // add policies
                 applyPolicies(planClient, declarativePlan, orgName, declarativePlan.getName(), declarativePlan.getVersion());
             });
