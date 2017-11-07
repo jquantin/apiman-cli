@@ -54,11 +54,11 @@ public interface PlanApi {
     Response addPolicy(@Path("orgName") String orgName, @Path("planName") String apiName,
                        @Path("version") String version, @Body ApiPolicy policyConfig);
 
-    @GET("/organizations/{orgName}/plans/{apiName}/versions/{version}/policies")
-    List<ApiPolicy> fetchPolicies(@Path("orgName") String orgName, @Path("apiName") String apiName,
+    @GET("/organizations/{orgName}/plans/{planName}/versions/{version}/policies")
+    List<ApiPolicy> fetchPolicies(@Path("orgName") String orgName, @Path("planName") String planName,
                                   @Path("version") String version);
 
-    @GET("/organizations/{orgName}/plans/{apiName}/versions/{version}/policies/{policyId}")
-    ApiPolicy fetchPolicy(@Path("orgName") String orgName, @Path("apiName") String apiName,
+    @GET("/organizations/{orgName}/plans/{planName}/versions/{version}/policies/{policyId}")
+    ApiPolicy fetchPolicy(@Path("orgName") String orgName, @Path("planName") String planName,
                                   @Path("version") String version, @Path("policyId") Long policyId);
 }

@@ -16,12 +16,12 @@
 
 package io.apiman.cli.core.common.util;
 
-import io.apiman.cli.core.common.ActionApi;
-import io.apiman.cli.core.common.model.ServerAction;
-import io.apiman.cli.core.common.model.ManagementApiVersion;
-import io.apiman.cli.management.ManagementApiUtil;
-
 import java.net.HttpURLConnection;
+
+import io.apiman.cli.core.common.ActionApi;
+import io.apiman.cli.core.common.model.ManagementApiVersion;
+import io.apiman.cli.core.common.model.ServerAction;
+import io.apiman.cli.management.ManagementApiUtil;
 
 /**
  * Common server action functionality.
@@ -62,6 +62,29 @@ public class ServerActionUtil {
             );
 
             return apiClient.doAction(action);
+        });
+    }
+    
+    /**
+     * Lock a Plan.
+     *
+     * @param orgName       the organisation name
+     * @param planName       the plan name
+     * @param planVersion    the plan version
+     * @param actionClient     the Server Action Plan client
+     */
+    public static void lockPlan(String orgName, String planName, String planVersion, ActionApi actionClient) {
+        String actionType = "lockPlan";
+
+        ManagementApiUtil.invokeAndCheckResponse(HttpURLConnection.HTTP_NO_CONTENT, () -> {
+            final ServerAction action = new ServerAction(
+                    actionType,
+                    orgName,
+                    planName,
+                    planVersion
+            );
+
+            return actionClient.doAction(action);
         });
     }
     
