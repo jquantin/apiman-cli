@@ -16,20 +16,20 @@
 
 package io.apiman.cli.core.api.factory;
 
+import java.util.List;
+
 import io.apiman.cli.core.api.Version12xServerApi;
 import io.apiman.cli.core.api.VersionAgnosticApi;
 import io.apiman.cli.core.api.model.Api;
 import io.apiman.cli.core.api.model.ApiConfig;
 import io.apiman.cli.core.api.model.ApiPolicy;
 import io.apiman.cli.core.api.model.ApiVersion;
+import io.apiman.cli.core.client.model.Contract;
 import io.apiman.cli.management.factory.AbstractManagementApiFactory;
 import io.apiman.cli.management.factory.ManagementApiFactory;
 import io.apiman.cli.management.factory.PostConverter;
 import retrofit.client.Response;
 import retrofit.mime.TypedString;
-
-import java.lang.reflect.Type;
-import java.util.List;
 
 /**
  * Provides apiman 1.2.x support.
@@ -109,6 +109,11 @@ public class Version12XManagementApiFactoryImpl extends AbstractManagementApiFac
             @Override
             public Response configurePolicy(String orgName, String apiName, String apiVersion, Long policyId, ApiPolicy policyConfig) {
                 return delegate.configurePolicy(orgName, apiName, apiVersion, policyId, policyConfig);
+            }
+
+	    @Override
+	    public List<Contract> fetchContracts(String orgName, String serviceName, String version) {
+		return delegate.fetchContracts(orgName, serviceName, version);
             }
         };
     }

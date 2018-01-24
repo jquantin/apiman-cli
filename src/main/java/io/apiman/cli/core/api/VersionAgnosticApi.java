@@ -16,11 +16,15 @@
 
 package io.apiman.cli.core.api;
 
-import io.apiman.cli.core.api.model.*;
+import java.util.List;
+
+import io.apiman.cli.core.api.model.Api;
+import io.apiman.cli.core.api.model.ApiConfig;
+import io.apiman.cli.core.api.model.ApiPolicy;
+import io.apiman.cli.core.api.model.ApiVersion;
+import io.apiman.cli.core.client.model.Contract;
 import retrofit.client.Response;
 import retrofit.mime.TypedString;
-
-import java.util.List;
 
 /**
  * @author Pete Cornish {@literal <outofcoffee@gmail.com>}
@@ -50,6 +54,9 @@ public interface VersionAgnosticApi {
                        String version, String definitionType,  TypedString definition);
 
     List<ApiPolicy> fetchPolicies(String orgName, String serviceName,
+                                  String version);
+    
+    List<Contract> fetchContracts(String orgName, String serviceName,
                                   String version);
     
     ApiPolicy fetchPolicy(String orgName, String apiName,

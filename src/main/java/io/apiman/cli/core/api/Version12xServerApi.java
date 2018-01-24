@@ -16,12 +16,21 @@
 
 package io.apiman.cli.core.api;
 
-import io.apiman.cli.core.api.model.*;
-import retrofit.client.Response;
-import retrofit.http.*;
-import retrofit.mime.TypedString;
-
 import java.util.List;
+
+import io.apiman.cli.core.api.model.Api;
+import io.apiman.cli.core.api.model.ApiConfig;
+import io.apiman.cli.core.api.model.ApiPolicy;
+import io.apiman.cli.core.api.model.ApiVersion;
+import io.apiman.cli.core.client.model.Contract;
+import retrofit.client.Response;
+import retrofit.http.Body;
+import retrofit.http.GET;
+import retrofit.http.Header;
+import retrofit.http.POST;
+import retrofit.http.PUT;
+import retrofit.http.Path;
+import retrofit.mime.TypedString;
 
 /**
  * Support for apiman 1.2.x.
@@ -73,4 +82,8 @@ public interface Version12xServerApi {
     @PUT("/organizations/{orgName}/apis/{apiName}/versions/{version}/policies/{policyId}")
     Response configurePolicy(@Path("orgName") String orgName, @Path("apiName") String apiName,
                              @Path("version") String version, @Path("policyId") Long policyId, @Body ApiPolicy policyConfig);
+    
+    @GET("/organizations/{orgName}/apis/{apiName}/versions/{version}/contracts")
+    List<Contract> fetchContracts(@Path("orgName") String orgName, @Path("apiName") String apiName,
+                                  @Path("version") String version);
 }

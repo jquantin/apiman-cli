@@ -38,6 +38,43 @@ public class Contract {
 	@JsonProperty
 	private String apiVersion;
 
+	@JsonProperty
+	private String createdOn;
+
+	@JsonProperty
+	private String clientVersion;
+
+	@JsonProperty
+	private String planVersion;
+
+	@JsonProperty
+	private String clientOrganizationId;
+
+	@JsonProperty
+	private String clientOrganizationName;
+
+	@JsonProperty
+	private String apiOrgName;
+
+	@JsonProperty
+	private String apiDescription;
+
+	@JsonProperty
+	private String clientId;
+	
+	@JsonProperty
+	private String planName;
+	
+	@JsonProperty
+	private Long contractId;
+	
+	@JsonProperty
+	private String apiName;
+	
+	@JsonProperty
+	private String clientName;
+	
+
 	public String getPlanId() {
 		return planId;
 	}
@@ -70,4 +107,100 @@ public class Contract {
 		this.apiVersion = apiVersion;
 	}
 
+	public String getCreatedOn() {
+	    return createdOn;
+	}
+
+	public void setCreatedOn(String createdOn) {
+	    this.createdOn = createdOn;
+	}
+
+	public String getClientVersion() {
+	    return clientVersion;
+	}
+
+	public void setClientVersion(String clientVersion) {
+	    this.clientVersion = clientVersion;
+	}
+
+	public String getPlanVersion() {
+	    return planVersion;
+	}
+
+	public void setPlanVersion(String planVersion) {
+	    this.planVersion = planVersion;
+	}
+
+	public String getClientOrganizationId() {
+	    return clientOrganizationId;
+	}
+
+	public void setClientOrganizationId(String clientOrganizationId) {
+	    this.clientOrganizationId = clientOrganizationId;
+	}
+
+	public String getClientOrganizationName() {
+	    return clientOrganizationName;
+	}
+
+	public void setClientOrganizationName(String clientOrganizationName) {
+	    this.clientOrganizationName = clientOrganizationName;
+	}
+
+	public String getApiOrgName() {
+	    return apiOrgName;
+	}
+
+	public void setApiOrgName(String apiOrgName) {
+	    this.apiOrgName = apiOrgName;
+	}
+
+	public String getApiDescription() {
+	    return apiDescription;
+	}
+
+	public void setApiDescription(String apiDescription) {
+	    this.apiDescription = apiDescription;
+	}
+
+	public String getClientId() {
+	    return clientId;
+	}
+
+	public void setClientId(String clientId) {
+	    this.clientId = clientId;
+	}
+
+	public String getPlanName() {
+	    return planName;
+	}
+
+	public void setPlanName(String planName) {
+	    this.planName = planName;
+	}
+
+	public Long getContractId() {
+	    return contractId;
+	}
+
+	public void setContractId(Long contractId) {
+	    this.contractId = contractId;
+	}
+
+	public String getApiName() {
+	    return apiName;
+	}
+
+	public void setApiName(String apiName) {
+	    this.apiName = apiName;
+	}
+
+	public String getClientName() {
+	    return clientName;
+	}
+
+	public void setClientName(String clientName) {
+	    this.clientName = clientName;
+	}
+	
 }
